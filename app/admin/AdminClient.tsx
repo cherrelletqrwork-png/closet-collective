@@ -23,17 +23,19 @@ const TABS: { value: AdminTab; label: string }[] = [
   { value: "orders", label: "Orders" },
 ];
 
-const emptyForm: ListingInput = {
-  name: "",
-  description: "",
-  price: 0,
-  condition: "Like new",
-  size: "",
-  category: "tops",
-  seller: "cherrelle",
-  status: "available",
-  image: "/items/top-1.svg",
-};
+function emptyForm(seller: string): ListingInput {
+  return {
+    name: "",
+    description: "",
+    price: 0,
+    condition: "Like new",
+    size: "",
+    category: "tops",
+    seller,
+    status: "available",
+    image: "/items/top-1.svg",
+  };
+}
 
 async function fileToDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -48,26 +50,33 @@ export function AdminClient({
   initialListings,
   initialContent,
   initialOrders,
-  loggedIn,
+  adminName,
 }: {
   initialListings: Listing[];
   initialContent: SiteContent;
   initialOrders: Order[];
-  loggedIn: boolean;
+  adminName: string | null;
 }) {
-  const [isLoggedIn, setIsLoggedIn] = useState(loggedIn);
+  const [admin, setAdmin] = useState(adminName);
   const [tab, setTab] = useState<AdminTab>("listings");
+  const [loginName, setLoginName] = useState(SELLERS[0].slug);
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
   const [listings, setListings] = useState(initialListings);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [form, setForm] = useState<ListingInput>(emptyForm);
+  const [form, setForm] = useState<ListingInput>(
+    emptyForm(adminName ?? SELLERS[0].slug)
+  );
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState("");
 
   const editingListing = useMemo(
     () => listings.find((listing) => listing.id === editingId),
     [editingId, listings]
+  );
+  const adminSeller = useMemo(
+    () => SELLERS.find((seller) => seller.slug === admin),
+    [admin]
   );
 
   async function login(event: FormEvent<HTMLFormElement>) {
@@ -77,20 +86,24 @@ export function AdminClient({
     const response = await fetch("/api/admin/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ password }),
+      body: JSON.stringify({ name: loginName, password }),
     });
     setBusy(false);
     if (!response.ok) {
-      setLoginError("That password did not work.");
+      setLoginError("That name and password combination did not work.");
       return;
     }
-    setIsLoggedIn(true);
+    setAdmin(loginName);
+    setForm(emptyForm(loginName));
     setPassword("");
+    // Orders are only sent to authenticated sessions, so refresh the page
+    // data now that the cookie is set.
+    window.location.reload();
   }
 
   async function logout() {
     await fetch("/api/admin/logout", { method: "POST" });
-    setIsLoggedIn(false);
+    setAdmin(null);
   }
 
   function updateField<K extends keyof ListingInput>(
@@ -119,7 +132,7 @@ export function AdminClient({
 
   function resetForm() {
     setEditingId(null);
-    setForm(emptyForm);
+    setForm(emptyForm(admin ?? SELLERS[0].slug));
   }
 
   async function saveListing(event: FormEvent<HTMLFormElement>) {
@@ -163,23 +176,40 @@ export function AdminClient({
     setNotice("Listing removed.");
   }
 
-  if (!isLoggedIn) {
+  if (!admin) {
     return (
       <div className="mx-auto max-w-md rounded-lg border border-blush-deep bg-white p-6 shadow-soft">
         <p className="font-script text-4xl text-rose">seller login</p>
         <h1 className="text-4xl font-bold text-cocoa">Admin Panel</h1>
         <p className="mt-3 text-sm leading-6 text-cocoa-light">
-          Enter the shared seller password to add, edit, or remove Closet
-          Collective listings.
+          Pick your name and enter your own password to manage Closet
+          Collective listings, site content, and orders.
         </p>
         <form onSubmit={login} className="mt-6 space-y-4">
-          <input
-            type="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            placeholder="Admin password"
-            className="w-full rounded-md border border-blush-deep bg-ivory px-4 py-3 outline-none focus:border-rose"
-          />
+          <label className="block text-sm font-extrabold text-cocoa">
+            Who are you?
+            <select
+              value={loginName}
+              onChange={(event) => setLoginName(event.target.value)}
+              className="mt-2 w-full rounded-md border border-blush-deep bg-ivory px-4 py-3 outline-none focus:border-rose"
+            >
+              {SELLERS.map((seller) => (
+                <option value={seller.slug} key={seller.slug}>
+                  {seller.emoji} {seller.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="block text-sm font-extrabold text-cocoa">
+            Password
+            <input
+              type="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              placeholder="Your password"
+              className="mt-2 w-full rounded-md border border-blush-deep bg-ivory px-4 py-3 outline-none focus:border-rose"
+            />
+          </label>
           {loginError && (
             <p className="rounded-md bg-status-sold-bg p-3 text-sm font-bold text-status-sold">
               {loginError}
@@ -187,7 +217,7 @@ export function AdminClient({
           )}
           <button
             disabled={busy}
-            className="w-full rounded-full bg-rose px-5 py-3 text-sm font-extrabold uppercase tracking-[0.14em] text-white disabled:opacity-60"
+            className="btn-shine w-full rounded-full bg-rose px-5 py-3 text-sm font-extrabold uppercase tracking-[0.14em] text-white disabled:opacity-60"
           >
             {busy ? "Checking..." : "Log in"}
           </button>
@@ -214,12 +244,19 @@ export function AdminClient({
             </button>
           ))}
         </div>
-        <button
-          onClick={logout}
-          className="rounded-full border border-rose/40 px-4 py-2 text-sm font-extrabold text-rose-deep"
-        >
-          Log out
-        </button>
+        <div className="flex items-center gap-3">
+          <p className="text-sm font-extrabold text-cocoa-light">
+            {adminSeller
+              ? `${adminSeller.emoji} Logged in as ${adminSeller.name}`
+              : `Logged in as ${admin}`}
+          </p>
+          <button
+            onClick={logout}
+            className="rounded-full border border-rose/40 px-4 py-2 text-sm font-extrabold text-rose-deep"
+          >
+            Log out
+          </button>
+        </div>
       </div>
 
       {tab === "content" && <SiteContentForm initialContent={initialContent} />}

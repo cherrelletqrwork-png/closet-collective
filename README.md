@@ -25,9 +25,11 @@ With no env vars set, the app runs in **demo mode**:
 
 ## Admin panel
 
-Visit `/admin` and log in with the shared seller password
-(`ADMIN_PASSWORD` env var; defaults to `closet123` in demo — change it before
-going live). Three tabs:
+Visit `/admin`, pick your name, and log in with your own password.
+Per-seller credentials live in the `ADMIN_USERS` env var as comma-separated
+`name:password` pairs (see `.env.example`). If `ADMIN_USERS` is unset, every
+seller can log in with the shared `ADMIN_PASSWORD` (defaults to `closet123`
+in demo). Three tabs:
 
 - **Listings** — add, edit, or remove pieces with photo upload, price,
   condition, size, category, seller, and status (Available / Reserved / Sold).

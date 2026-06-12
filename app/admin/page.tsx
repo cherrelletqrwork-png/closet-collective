@@ -1,17 +1,17 @@
 import { AdminClient } from "./AdminClient";
 import { PageShell } from "@/components/PageShell";
-import { isAdmin } from "@/lib/auth";
+import { currentAdmin } from "@/lib/auth";
 import { getListings, getOrders, getSiteContent } from "@/lib/store";
 
 export default async function AdminPage() {
-  const [loggedIn, listings, content] = await Promise.all([
-    isAdmin(),
+  const [adminName, listings, content] = await Promise.all([
+    currentAdmin(),
     getListings(),
     getSiteContent(),
   ]);
   // Orders contain buyer details — only ship them to the browser for a
   // logged-in admin session.
-  const orders = loggedIn ? await getOrders() : [];
+  const orders = adminName ? await getOrders() : [];
 
   return (
     <PageShell>
@@ -21,7 +21,7 @@ export default async function AdminPage() {
             initialListings={listings}
             initialContent={content}
             initialOrders={orders}
-            loggedIn={loggedIn}
+            adminName={adminName}
           />
         </div>
       </section>

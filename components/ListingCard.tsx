@@ -2,13 +2,15 @@ import Link from "next/link";
 import type { Listing } from "@/lib/types";
 import { getSeller, telegramLink } from "@/lib/sellers";
 import { StatusBadge } from "./StatusBadge";
+import { TiltCard } from "./TiltCard";
 
 export function ListingCard({ listing }: { listing: Listing }) {
   const seller = getSeller(listing.seller);
   const message = `Hi ${seller?.name ?? "there"}! I'm interested in ${listing.name} from Closet Collective.`;
 
   return (
-    <article className="group overflow-hidden rounded-lg border border-blush-deep/50 bg-white shadow-card transition hover:-translate-y-1 hover:shadow-card-hover">
+    <TiltCard className="h-full">
+    <article className="group h-full overflow-hidden rounded-lg border border-blush-deep/50 bg-white shadow-card transition hover:shadow-card-hover">
       <Link href={`/shop/${listing.id}`} className="block">
         <div className="relative aspect-[4/5] overflow-hidden bg-blush-light">
           <img
@@ -46,5 +48,6 @@ export function ListingCard({ listing }: { listing: Listing }) {
         </div>
       </div>
     </article>
+    </TiltCard>
   );
 }

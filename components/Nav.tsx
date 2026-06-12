@@ -32,7 +32,7 @@ export function Nav() {
             <Link
               key={link.href}
               href={link.href}
-              className="rounded-full px-4 py-2 text-sm font-bold text-cocoa transition hover:bg-blush-light hover:text-rose-deep"
+              className="nav-link rounded-full px-4 py-2 text-sm font-bold text-cocoa transition hover:text-rose-deep"
             >
               {link.label}
             </Link>
@@ -41,7 +41,7 @@ export function Nav() {
 
         <Link
           href="/shop"
-          className="rounded-full bg-rose px-4 py-2 text-sm font-extrabold text-white shadow-card transition hover:bg-rose-deep"
+          className="btn-shine rounded-full bg-rose px-4 py-2 text-sm font-extrabold text-white shadow-card transition hover:bg-rose-deep"
         >
           Buy now
         </Link>

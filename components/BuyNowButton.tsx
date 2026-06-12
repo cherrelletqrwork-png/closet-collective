@@ -59,7 +59,7 @@ export function BuyNowButton({
     <>
       <button
         onClick={() => setOpen(true)}
-        className="inline-flex w-full items-center justify-center rounded-full bg-rose px-6 py-4 text-sm font-extrabold uppercase tracking-[0.14em] text-white shadow-soft transition hover:bg-rose-deep sm:w-auto"
+        className="btn-shine inline-flex w-full items-center justify-center rounded-full bg-rose px-6 py-4 text-sm font-extrabold uppercase tracking-[0.14em] text-white shadow-soft transition hover:bg-rose-deep sm:w-auto"
       >
         Buy now · ${price}
       </button>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { HeartConfetti } from "@/components/HeartConfetti";
 import { PageShell } from "@/components/PageShell";
 import { TELEGRAM_CHANNEL } from "@/lib/sellers";
 import { markOrderPaid } from "@/lib/store";
@@ -40,6 +41,7 @@ export default async function OrderSuccessPage({
   return (
     <PageShell>
       <section className="relative overflow-hidden bg-cream py-20">
+        {paid && <HeartConfetti />}
         <span className="absolute left-10 top-12 text-3xl text-rose/40 sparkle">
           ✦
         </span>
@@ -83,7 +85,7 @@ export default async function OrderSuccessPage({
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Link
               href="/shop"
-              className="rounded-full bg-rose px-6 py-3 text-sm font-extrabold uppercase tracking-[0.14em] text-white shadow-soft transition hover:bg-rose-deep"
+              className="btn-shine rounded-full bg-rose px-6 py-3 text-sm font-extrabold uppercase tracking-[0.14em] text-white shadow-soft transition hover:bg-rose-deep"
             >
               Keep browsing
             </Link>
