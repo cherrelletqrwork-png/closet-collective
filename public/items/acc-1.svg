@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 750">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fffdf9"/>
+      <stop offset="1" stop-color="#f8d7da"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="750" fill="url(#bg)"/>
+  <g fill="#e9b9be">
+    <path d="M110 140 q3 14 17 17 q-14 3 -17 17 q-3 -14 -17 -17 q14 -3 17 -17z"/>
+    <path d="M495 190 q2 10 12 12 q-10 2 -12 12 q-2 -10 -12 -12 q10 -2 12 -12z"/>
+    <path d="M475 600 q3 14 17 17 q-14 3 -17 17 q-3 -14 -17 -17 q14 -3 17 -17z"/>
+  </g>
+  <g stroke="#b06a71" stroke-width="6" stroke-linejoin="round" fill="#fceef0">
+    <path d="M300 230 C262 198 200 204 214 244 C224 272 276 262 300 240 C324 262 376 272 386 244 C400 204 338 198 300 230 Z"/>
+    <circle cx="300" cy="234" r="11" fill="#c9848a"/>
+    <path d="M290 250 L272 305 M310 250 L328 305" fill="none" stroke-linecap="round"/>
+  </g>
+  <g stroke="#b06a71" stroke-width="6" stroke-linejoin="round" fill="#fffdf9">
+    <path d="M195 420 C165 396 118 400 128 430 C136 452 176 444 195 428 C214 444 254 452 262 430 C272 400 225 396 195 420 Z"/>
+    <circle cx="195" cy="423" r="9" fill="#c9848a"/>
+  </g>
+  <g stroke="#b06a71" stroke-width="6" stroke-linejoin="round" fill="#f8d7da">
+    <path d="M405 500 C375 476 328 480 338 510 C346 532 386 524 405 508 C424 524 464 532 472 510 C482 480 435 476 405 500 Z"/>
+    <circle cx="405" cy="503" r="9" fill="#c9848a"/>
+  </g>
+  <g fill="#fffdf9" stroke="#dba3a9" stroke-width="4">
+    <circle cx="252" cy="330" r="10"/>
+    <circle cx="350" cy="330" r="10"/>
+  </g>
+  <text x="300" y="690" text-anchor="middle" font-family="Georgia, serif" font-size="26" fill="#a8636a" font-style="italic">photo coming soon ♡</text>
+</svg>

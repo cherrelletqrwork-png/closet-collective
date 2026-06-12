@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 750">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fceef0"/>
+      <stop offset="1" stop-color="#f3bfc5"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="750" fill="url(#bg)"/>
+  <g fill="#dba3a9">
+    <path d="M110 180 q3 14 17 17 q-14 3 -17 17 q-3 -14 -17 -17 q14 -3 17 -17z"/>
+    <path d="M495 140 q2 10 12 12 q-10 2 -12 12 q-2 -10 -12 -12 q10 -2 12 -12z"/>
+    <path d="M480 580 q3 14 17 17 q-14 3 -17 17 q-3 -14 -17 -17 q14 -3 17 -17z"/>
+  </g>
+  <g stroke="#b06a71" stroke-width="7" stroke-linejoin="round" stroke-linecap="round" fill="#fffdf9">
+    <path d="M195 265 C235 235 365 235 405 265 L490 330 L450 395 L405 360 L405 540 C335 565 265 565 195 540 L195 360 L150 395 L110 330 Z"/>
+    <path d="M300 265 L300 540" fill="none"/>
+  </g>
+  <g stroke="#b06a71" stroke-width="5" fill="#f8d7da" stroke-linejoin="round">
+    <path d="M300 330 C275 308 235 312 245 338 C252 356 285 350 300 336 C315 350 348 356 355 338 C365 312 325 308 300 330 Z"/>
+    <circle cx="300" cy="333" r="9" fill="#c9848a"/>
+    <path d="M292 344 L278 386 M308 344 L322 386" fill="none" stroke-linecap="round"/>
+  </g>
+  <text x="300" y="690" text-anchor="middle" font-family="Georgia, serif" font-size="26" fill="#a8636a" font-style="italic">photo coming soon ♡</text>
+</svg>

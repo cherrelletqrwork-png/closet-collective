@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "closet-collective",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "cwd": "/Users/cherrelle/Documents/New project/closet-collective",
+      "port": 3000
+    }
+  ]
+}

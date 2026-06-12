@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 750">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fffdf9"/>
+      <stop offset="1" stop-color="#f8d7da"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="750" fill="url(#bg)"/>
+  <g fill="#e9b9be">
+    <path d="M125 180 q3 14 17 17 q-14 3 -17 17 q-3 -14 -17 -17 q14 -3 17 -17z"/>
+    <path d="M485 160 q2 10 12 12 q-10 2 -12 12 q-2 -10 -12 -12 q10 -2 12 -12z"/>
+    <path d="M470 590 q3 14 17 17 q-14 3 -17 17 q-3 -14 -17 -17 q14 -3 17 -17z"/>
+  </g>
+  <path d="M95 400 C180 350 240 440 300 400 C360 360 420 450 505 390" stroke="#c9848a" stroke-width="26" fill="none" stroke-linecap="round"/>
+  <path d="M95 400 C180 350 240 440 300 400 C360 360 420 450 505 390" stroke="#fceef0" stroke-width="14" fill="none" stroke-linecap="round"/>
+  <path d="M300 382 c-20 -24 -56 -8 -50 20 c5 21 30 31 50 44 c20 -13 45 -23 50 -44 c6 -28 -30 -44 -50 -20z" fill="#c9848a" stroke="#b06a71" stroke-width="5"/>
+  <text x="300" y="690" text-anchor="middle" font-family="Georgia, serif" font-size="26" fill="#a8636a" font-style="italic">photo coming soon ♡</text>
+</svg>

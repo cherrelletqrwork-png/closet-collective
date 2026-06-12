@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 750">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fceef0"/>
+      <stop offset="1" stop-color="#f3bfc5"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="750" fill="url(#bg)"/>
+  <g fill="#dba3a9">
+    <path d="M120 160 q3 14 17 17 q-14 3 -17 17 q-3 -14 -17 -17 q14 -3 17 -17z"/>
+    <path d="M490 230 q2 10 12 12 q-10 2 -12 12 q-2 -10 -12 -12 q10 -2 12 -12z"/>
+    <path d="M465 620 q3 14 17 17 q-14 3 -17 17 q-3 -14 -17 -17 q14 -3 17 -17z"/>
+  </g>
+  <path d="M205 350 C220 230 380 230 395 350" stroke="#b06a71" stroke-width="7" fill="none" stroke-dasharray="1 14" stroke-linecap="round"/>
+  <g stroke="#b06a71" stroke-width="7" stroke-linejoin="round" fill="#fffdf9">
+    <rect x="170" y="345" width="260" height="185" rx="34"/>
+  </g>
+  <g stroke="#e9b9be" stroke-width="4">
+    <path d="M170 400 L430 470 M170 470 L430 400 M240 345 L240 530 M300 345 L300 530 M360 345 L360 530" fill="none"/>
+  </g>
+  <path d="M300 430 c-12 -14 -34 -4 -30 12 c3 12 18 18 30 26 c12 -8 27 -14 30 -26 c4 -16 -18 -26 -30 -12z" fill="#c9848a"/>
+  <text x="300" y="690" text-anchor="middle" font-family="Georgia, serif" font-size="26" fill="#a8636a" font-style="italic">photo coming soon ♡</text>
+</svg>

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 750">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fffdf9"/>
+      <stop offset="1" stop-color="#f8d7da"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="750" fill="url(#bg)"/>
+  <g fill="#e9b9be">
+    <path d="M120 130 q3 14 17 17 q-14 3 -17 17 q-3 -14 -17 -17 q14 -3 17 -17z"/>
+    <path d="M480 200 q2 10 12 12 q-10 2 -12 12 q-2 -10 -12 -12 q10 -2 12 -12z"/>
+    <path d="M460 600 q3 14 17 17 q-14 3 -17 17 q-3 -14 -17 -17 q14 -3 17 -17z"/>
+    <path d="M130 560 q2 10 12 12 q-10 2 -12 12 q-2 -10 -12 -12 q10 -2 12 -12z"/>
+  </g>
+  <g stroke="#c9848a" stroke-width="7" stroke-linejoin="round" stroke-linecap="round" fill="#fceef0">
+    <ellipse cx="158" cy="320" rx="58" ry="72"/>
+    <ellipse cx="442" cy="320" rx="58" ry="72"/>
+    <path d="M205 270 L395 270 L395 530 C330 556 270 556 205 530 Z"/>
+    <path d="M250 270 L250 318 L350 318 L350 270" fill="none"/>
+  </g>
+  <path d="M205 460 C270 478 330 478 395 460" stroke="#e9b9be" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <text x="300" y="690" text-anchor="middle" font-family="Georgia, serif" font-size="26" fill="#a8636a" font-style="italic">photo coming soon ♡</text>
+</svg>

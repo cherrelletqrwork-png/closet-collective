@@ -1,0 +1,153 @@
+@import "tailwindcss";
+
+@theme {
+  --color-blush: #f8d7da;
+  --color-blush-light: #fceef0;
+  --color-blush-deep: #f3bfc5;
+  --color-cream: #faf7f2;
+  --color-ivory: #fffdf9;
+  --color-rose: #c9848a;
+  --color-rose-deep: #a8636a;
+  --color-cocoa: #6b4f52;
+  --color-cocoa-light: #8c6f72;
+
+  --color-status-available: #4c7a56;
+  --color-status-available-bg: #e3f2e6;
+  --color-status-reserved: #8f7426;
+  --color-status-reserved-bg: #f7ecc8;
+  --color-status-sold: #a83a44;
+  --color-status-sold-bg: #f9d2d6;
+
+  --font-serif: var(--font-playfair), Georgia, serif;
+  --font-script: var(--font-parisienne), cursive;
+  --font-sans: var(--font-nunito), ui-sans-serif, system-ui, sans-serif;
+
+  --shadow-soft: 0 4px 24px rgba(201, 132, 138, 0.12);
+  --shadow-card: 0 2px 12px rgba(201, 132, 138, 0.1);
+  --shadow-card-hover: 0 8px 28px rgba(201, 132, 138, 0.22);
+}
+
+body {
+  background-color: var(--color-cream);
+  color: var(--color-cocoa);
+  font-family: var(--font-sans);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-serif);
+}
+
+.font-script {
+  font-family: var(--font-script);
+}
+
+@keyframes sparkle-twinkle {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
+.sparkle {
+  animation: sparkle-twinkle 2.6s ease-in-out infinite;
+}
+
+.sparkle-delay-1 {
+  animation-delay: 0.7s;
+}
+
+.sparkle-delay-2 {
+  animation-delay: 1.4s;
+}
+
+@keyframes float-gentle {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
+.float-gentle {
+  animation: float-gentle 5s ease-in-out infinite;
+}
+
+/* Scroll reveal — paired with components/Reveal.tsx */
+.reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition:
+    opacity 0.7s ease,
+    transform 0.7s ease;
+}
+
+.reveal.revealed {
+  opacity: 1;
+  transform: none;
+}
+
+@keyframes marquee-scroll {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-track {
+  animation: marquee-scroll 26s linear infinite;
+}
+
+@keyframes drift-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.85);
+  }
+  20%,
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-110px) scale(1.05);
+  }
+}
+
+.drift-up {
+  animation: drift-up 7s ease-in-out infinite;
+}
+
+.drift-delay-1 {
+  animation-delay: 2.2s;
+}
+
+.drift-delay-2 {
+  animation-delay: 4.4s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .sparkle,
+  .float-gentle,
+  .marquee-track,
+  .drift-up {
+    animation: none;
+  }
+
+  .drift-up {
+    opacity: 0;
+  }
+}
