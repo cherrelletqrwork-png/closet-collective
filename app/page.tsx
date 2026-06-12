@@ -1,29 +1,12 @@
 import Link from "next/link";
 import { HeroDecor } from "@/components/HeroDecor";
 import { ListingCard } from "@/components/ListingCard";
+import { Marquee } from "@/components/Marquee";
 import { PageShell } from "@/components/PageShell";
 import { Reveal } from "@/components/Reveal";
 import { TiltCard } from "@/components/TiltCard";
-import { HOLD_MINUTES, getListings, getSiteContent } from "@/lib/store";
+import { getListings, getSiteContent } from "@/lib/store";
 import { SELLERS, TELEGRAM_CHANNEL } from "@/lib/sellers";
-
-const PROMISES = [
-  {
-    emoji: "🎀",
-    title: "One of one",
-    body: "Every piece is the only one we have — once it's gone, it's gone.",
-  },
-  {
-    emoji: "⏳",
-    title: "First come, first served",
-    body: `Buy Now holds a piece just for you for ${HOLD_MINUTES} minutes while you pay.`,
-  },
-  {
-    emoji: "💳",
-    title: "Pay securely",
-    body: "PayNow or card through website checkout, or DM the seller on Telegram.",
-  },
-];
 
 export default async function Home() {
   const [listings, content] = await Promise.all([
@@ -68,21 +51,45 @@ export default async function Home() {
             <div className="absolute -bottom-5 -right-5 h-28 w-28 rounded-full border border-rose/25 bg-white/70" />
             <TiltCard maxTilt={5}>
               <div className="relative overflow-hidden rounded-lg border border-blush-deep bg-white p-3 shadow-soft">
-                <div className="grid grid-cols-2 gap-3">
-                  {featured.slice(0, 4).map((item) => (
-                    <Link
-                      href={`/shop/${item.id}`}
-                      key={item.id}
-                      className="group overflow-hidden rounded-md bg-blush-light"
-                    >
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="aspect-[4/5] h-full w-full object-cover transition duration-500 group-hover:scale-105"
-                      />
-                    </Link>
-                  ))}
-                </div>
+                {featured.length > 0 ? (
+                  <div className="grid grid-cols-2 gap-3">
+                    {featured.slice(0, 4).map((item) => (
+                      <Link
+                        href={`/shop/${item.id}`}
+                        key={item.id}
+                        className="group overflow-hidden rounded-md bg-blush-light"
+                      >
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className="aspect-[4/5] h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                        />
+                      </Link>
+                    ))}
+                  </div>
+                ) : (
+                  // No listings yet — keep the card pretty instead of
+                  // collapsing into an empty white bar.
+                  <div className="relative flex aspect-[4/3] flex-col items-center justify-center gap-2 rounded-md bg-blush-light px-6 text-center">
+                    <span className="sparkle absolute left-6 top-5 text-xl text-rose/50">
+                      ✦
+                    </span>
+                    <span className="sparkle sparkle-delay-1 absolute right-8 top-10 text-2xl text-rose/40">
+                      ♡
+                    </span>
+                    <span className="sparkle sparkle-delay-2 absolute bottom-6 left-10 text-xl text-rose/40">
+                      ✧
+                    </span>
+                    <span className="float-gentle text-4xl">🎀</span>
+                    <p className="font-script text-4xl text-rose">
+                      first drop loading…
+                    </p>
+                    <p className="text-sm font-bold leading-6 text-cocoa-light">
+                      New pieces are being photographed and listed — check
+                      back soon ♡
+                    </p>
+                  </div>
+                )}
               </div>
             </TiltCard>
             <img
@@ -94,27 +101,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="border-y border-blush-deep/40 bg-blush">
-        <div className="mx-auto grid max-w-6xl gap-4 px-4 py-7 sm:px-6 md:grid-cols-3">
-          {PROMISES.map((promise, index) => (
-            <Reveal key={promise.title} delay={index * 110}>
-              <div className="flex h-full items-start gap-3">
-                <span className="float-gentle mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-xl shadow-card">
-                  {promise.emoji}
-                </span>
-                <div>
-                  <p className="text-sm font-extrabold uppercase tracking-[0.14em] text-rose-deep">
-                    {promise.title}
-                  </p>
-                  <p className="mt-1 text-sm font-bold leading-6 text-cocoa">
-                    {promise.body}
-                  </p>
-                </div>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </section>
+      <Marquee />
 
       <section className="bg-ivory py-16">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">

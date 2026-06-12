@@ -96,6 +96,16 @@ h4 {
   transform: none;
 }
 
+@keyframes marquee-scroll {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-track {
+  animation: marquee-scroll 26s linear infinite;
+}
+
 @keyframes drift-up {
   0% {
     opacity: 0;
@@ -307,6 +317,7 @@ h4 {
 
   .sparkle,
   .float-gentle,
+  .marquee-track,
   .drift-up,
   .blob,
   .cursor-spark,
