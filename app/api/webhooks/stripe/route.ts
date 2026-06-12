@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type Stripe from "stripe";
-import { markOrderPaid } from "@/lib/store";
+import { cancelOrder, markOrderPaid } from "@/lib/store";
 import { getStripe, isStripeConfigured } from "@/lib/stripe";
 
 export async function POST(request: Request) {
@@ -35,6 +35,13 @@ export async function POST(request: Request) {
             : session.payment_intent?.id ?? null,
       });
     }
+  }
+
+  // Buyer never paid and the session lapsed — free the piece right away
+  // instead of waiting for the lazy hold sweep.
+  if (event.type === "checkout.session.expired") {
+    const orderId = event.data.object.metadata?.order_id;
+    if (orderId) await cancelOrder(orderId);
   }
 
   return NextResponse.json({ received: true });

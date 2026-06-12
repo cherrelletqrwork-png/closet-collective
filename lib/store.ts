@@ -71,9 +71,121 @@ async function resolveImage(image: string): Promise<string> {
     .publicUrl;
 }
 
+// ── First-come-first-served checkout holds ────────────────
+// Every piece is one-of-one, so Buy Now "claims" the listing (available →
+// reserved) before Stripe checkout opens. The hold matches the checkout
+// session lifetime; if payment doesn't arrive in time the listing is
+// released back to available by the lazy sweep below.
+export const HOLD_MINUTES = 30;
+
+function holdCutoffIso(): string {
+  return new Date(Date.now() - HOLD_MINUTES * 60 * 1000).toISOString();
+}
+
+// Atomically claim an available listing for checkout. Returns false when
+// somebody else got there first.
+export async function claimListing(id: string): Promise<boolean> {
+  if (!isSupabaseConfigured()) {
+    const listing = demoListings().find((l) => l.id === id);
+    if (!listing || listing.status !== "available") return false;
+    listing.status = "reserved";
+    return true;
+  }
+
+  // The status filter makes this a compare-and-swap: only one of two
+  // simultaneous buyers can move the row from available to reserved.
+  const { data, error } = await getSupabase()
+    .from("listings")
+    .update({ status: "reserved" })
+    .eq("id", id)
+    .eq("status", "available")
+    .select("id");
+  if (error) throw new Error(`Failed to reserve listing: ${error.message}`);
+  return (data?.length ?? 0) > 0;
+}
+
+// Cancel a pending web order (buyer backed out of checkout, or the session
+// expired) and free its listing unless another checkout is still active.
+export async function cancelOrder(orderId: string): Promise<void> {
+  if (!isSupabaseConfigured()) {
+    const order = demoOrders().find(
+      (o) => o.id === orderId && o.status === "pending"
+    );
+    if (!order) return;
+    order.status = "cancelled";
+    const stillHeld = demoOrders().some(
+      (o) => o.listing_id === order.listing_id && o.status === "pending"
+    );
+    const listing = demoListings().find((l) => l.id === order.listing_id);
+    if (listing && listing.status === "reserved" && !stillHeld) {
+      listing.status = "available";
+    }
+    return;
+  }
+
+  const supabase = getSupabase();
+  const { data: order, error } = await supabase
+    .from("orders")
+    .update({ status: "cancelled" })
+    .eq("id", orderId)
+    .eq("status", "pending")
+    .select("listing_id")
+    .maybeSingle();
+  if (error) throw new Error(`Failed to cancel order: ${error.message}`);
+  if (!order?.listing_id) return;
+
+  const { data: active, error: activeError } = await supabase
+    .from("orders")
+    .select("id")
+    .eq("listing_id", order.listing_id)
+    .eq("status", "pending")
+    .limit(1);
+  if (activeError) {
+    throw new Error(`Failed to check holds: ${activeError.message}`);
+  }
+  if (active && active.length > 0) return;
+
+  const { error: releaseError } = await supabase
+    .from("listings")
+    .update({ status: "available" })
+    .eq("id", order.listing_id)
+    .eq("status", "reserved");
+  if (releaseError) {
+    throw new Error(`Failed to release listing: ${releaseError.message}`);
+  }
+}
+
+// Lazy sweep run on listing reads: cancel checkout holds that outlived the
+// payment window and put their pieces back up for grabs. Listings a seller
+// reserved by hand (no web order behind them) are left alone.
+async function releaseExpiredHolds(): Promise<void> {
+  if (!isSupabaseConfigured()) {
+    const cutoff = holdCutoffIso();
+    const expired = demoOrders().filter(
+      (o) => o.status === "pending" && o.created_at < cutoff
+    );
+    for (const order of expired) {
+      await cancelOrder(order.id);
+    }
+    return;
+  }
+
+  const supabase = getSupabase();
+  const { data: expired, error } = await supabase
+    .from("orders")
+    .select("id")
+    .eq("status", "pending")
+    .lt("created_at", holdCutoffIso());
+  if (error) throw new Error(`Failed to find expired holds: ${error.message}`);
+  for (const order of expired ?? []) {
+    await cancelOrder(order.id);
+  }
+}
+
 export async function getListings(): Promise<Listing[]> {
   // Listings change at runtime, so never bake them into prerendered HTML.
   await connection();
+  await releaseExpiredHolds();
   if (!isSupabaseConfigured()) return sortNewest(demoListings());
 
   const { data, error } = await getSupabase()
@@ -86,6 +198,7 @@ export async function getListings(): Promise<Listing[]> {
 
 export async function getListing(id: string): Promise<Listing | null> {
   await connection();
+  await releaseExpiredHolds();
   if (!isSupabaseConfigured()) {
     return demoListings().find((l) => l.id === id) ?? null;
   }

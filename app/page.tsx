@@ -1,12 +1,29 @@
 import Link from "next/link";
 import { HeroDecor } from "@/components/HeroDecor";
 import { ListingCard } from "@/components/ListingCard";
-import { Marquee } from "@/components/Marquee";
 import { PageShell } from "@/components/PageShell";
 import { Reveal } from "@/components/Reveal";
 import { TiltCard } from "@/components/TiltCard";
-import { getListings, getSiteContent } from "@/lib/store";
+import { HOLD_MINUTES, getListings, getSiteContent } from "@/lib/store";
 import { SELLERS, TELEGRAM_CHANNEL } from "@/lib/sellers";
+
+const PROMISES = [
+  {
+    emoji: "🎀",
+    title: "One of one",
+    body: "Every piece is the only one we have — once it's gone, it's gone.",
+  },
+  {
+    emoji: "⏳",
+    title: "First come, first served",
+    body: `Buy Now holds a piece just for you for ${HOLD_MINUTES} minutes while you pay.`,
+  },
+  {
+    emoji: "💳",
+    title: "Pay securely",
+    body: "PayNow or card through website checkout, or DM the seller on Telegram.",
+  },
+];
 
 export default async function Home() {
   const [listings, content] = await Promise.all([
@@ -77,7 +94,27 @@ export default async function Home() {
         </div>
       </section>
 
-      <Marquee />
+      <section className="border-y border-blush-deep/40 bg-blush">
+        <div className="mx-auto grid max-w-6xl gap-4 px-4 py-7 sm:px-6 md:grid-cols-3">
+          {PROMISES.map((promise, index) => (
+            <Reveal key={promise.title} delay={index * 110}>
+              <div className="flex h-full items-start gap-3">
+                <span className="float-gentle mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-xl shadow-card">
+                  {promise.emoji}
+                </span>
+                <div>
+                  <p className="text-sm font-extrabold uppercase tracking-[0.14em] text-rose-deep">
+                    {promise.title}
+                  </p>
+                  <p className="mt-1 text-sm font-bold leading-6 text-cocoa">
+                    {promise.body}
+                  </p>
+                </div>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </section>
 
       <section className="bg-ivory py-16">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">

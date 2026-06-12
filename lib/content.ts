@@ -12,11 +12,11 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
   how_to_order_intro:
     "Found something cute? Tap Buy Now on the listing, add your contact and delivery notes, then pay securely online. We will follow up with meetup or mailing details after payment.",
   payment_terms: [
-    "Website checkout is first payment = first served.",
+    "Every piece is one of one — strictly first come, first served.",
+    "Tapping Buy Now reserves the piece just for you for 30 minutes while you pay. If payment isn't completed in time, it goes back up for grabs.",
     "Pay securely through Stripe Checkout. PayNow availability depends on the payment methods enabled in the Stripe account.",
     "All sales are final. No refunds or exchanges.",
     "Minor flaws will always be stated in the listing description.",
-    "Reserved items are held for 24 hours only after payment confirmation.",
   ],
   delivery_intro:
     "Delivery and meetup options still depend on the seller. Add your preference during checkout.",

@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { BuyNowButton } from "@/components/BuyNowButton";
 import { PageShell } from "@/components/PageShell";
 import { StatusBadge } from "@/components/StatusBadge";
-import { getListing } from "@/lib/store";
+import { HOLD_MINUTES, cancelOrder, getListing } from "@/lib/store";
 import { getSeller, telegramLink } from "@/lib/sellers";
 import { isStripeConfigured } from "@/lib/stripe";
 
@@ -12,9 +12,14 @@ export default async function ListingPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ cancelled?: string }>;
+  searchParams: Promise<{ cancelled?: string; order?: string }>;
 }) {
   const [{ id }, query] = await Promise.all([params, searchParams]);
+  // Stripe's cancel link lands here — void that order so the piece frees up
+  // immediately instead of staying held for the rest of the hold window.
+  if (query.cancelled && query.order) {
+    await cancelOrder(query.order);
+  }
   const listing = await getListing(id);
   if (!listing) notFound();
 
@@ -109,6 +114,13 @@ export default async function ListingPage({
                   <span className="inline-flex w-full cursor-not-allowed items-center justify-center rounded-full bg-blush px-6 py-4 text-sm font-extrabold uppercase tracking-[0.14em] text-rose-deep/60 sm:w-auto">
                     {listing.status === "sold" ? "Sold" : "Reserved"}
                   </span>
+                )}
+                {listing.status === "reserved" && (
+                  <p className="w-full self-center text-sm font-bold leading-6 text-cocoa-light sm:w-auto">
+                    Someone may be checking out right now — if payment
+                    isn&apos;t completed within {HOLD_MINUTES} minutes, this
+                    piece frees up again. Check back soon ♡
+                  </p>
                 )}
                 <a
                   href={telegramLink(seller?.telegram ?? "", message)}
