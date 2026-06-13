@@ -223,6 +223,51 @@ export function AdminClient({
     setNotice("Listing removed.");
   }
 
+  // One-click status change from the listing list (no need to open Edit).
+  async function setListingStatus(id: string, status: ListingStatus) {
+    setBusy(true);
+    setNotice("");
+    const response = await fetch(`/api/listings/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status }),
+    });
+    setBusy(false);
+    if (!response.ok) {
+      setNotice("Could not update the status. Please try again.");
+      return;
+    }
+    const saved = (await response.json()) as Listing;
+    setListings((current) =>
+      current.map((listing) => (listing.id === saved.id ? saved : listing))
+    );
+    setNotice(`Marked "${saved.name}" as ${saved.status}.`);
+  }
+
+  // Build a Carousell-ready text block and copy it to the clipboard.
+  async function copyForCarousell(listing: Listing) {
+    const seller = SELLERS.find((s) => s.slug === listing.seller);
+    const origin = window.location.origin;
+    const block = [
+      listing.name,
+      ``,
+      `$${listing.price}`,
+      `Size: ${listing.size}`,
+      `Condition: ${listing.condition}`,
+      ``,
+      listing.description,
+      ``,
+      seller ? `Order: @${seller.telegram} on Telegram, or shop at` : `Shop at`,
+      `${origin}/shop/${listing.id}`,
+    ].join("\n");
+    try {
+      await navigator.clipboard.writeText(block);
+      setNotice(`Copied "${listing.name}" for Carousell — paste it into a new listing.`);
+    } catch {
+      setNotice("Couldn't copy automatically — long-press the description to copy manually.");
+    }
+  }
+
   if (!admin) {
     return (
       <div className="mx-auto max-w-md rounded-lg border border-blush-deep bg-white p-6 shadow-soft">
@@ -535,12 +580,40 @@ export function AdminClient({
                   </div>
                   <StatusBadge status={listing.status} />
                 </div>
+                <div className="mt-3">
+                  <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-cocoa-light">
+                    Mark as
+                  </p>
+                  <div className="mt-1 flex flex-wrap gap-2">
+                    {STATUSES.map((status) => (
+                      <button
+                        key={status.value}
+                        type="button"
+                        disabled={busy || listing.status === status.value}
+                        onClick={() => setListingStatus(listing.id, status.value)}
+                        className={`rounded-full px-3 py-1.5 text-xs font-extrabold transition ${
+                          listing.status === status.value
+                            ? "bg-rose text-white"
+                            : "border border-rose/40 text-rose-deep hover:bg-blush-light disabled:opacity-60"
+                        }`}
+                      >
+                        {status.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
                 <div className="mt-4 flex flex-wrap gap-2">
                   <button
                     onClick={() => startEdit(listing)}
                     className="rounded-full bg-blush px-4 py-2 text-sm font-extrabold text-rose-deep"
                   >
                     Edit
+                  </button>
+                  <button
+                    onClick={() => copyForCarousell(listing)}
+                    className="rounded-full border border-rose/40 px-4 py-2 text-sm font-extrabold text-rose-deep hover:bg-blush-light"
+                  >
+                    Copy for Carousell
                   </button>
                   <button
                     onClick={() => removeListing(listing.id)}

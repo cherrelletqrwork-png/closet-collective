@@ -1,12 +1,51 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BuyNowButton } from "@/components/BuyNowButton";
 import { Gallery } from "@/components/Gallery";
 import { PageShell } from "@/components/PageShell";
+import { ShareButton } from "@/components/ShareButton";
 import { StatusBadge } from "@/components/StatusBadge";
 import { HOLD_MINUTES, cancelOrder, getListing } from "@/lib/store";
 import { getSeller, telegramLink } from "@/lib/sellers";
 import { isStripeConfigured } from "@/lib/stripe";
+
+// Rich preview when an item link is shared on Instagram, Telegram, WhatsApp,
+// etc. — shows the photo, name, and price instead of just the logo.
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const listing = await getListing(id);
+  if (!listing) return { title: "Closet Collective" };
+
+  const title = `${listing.name} · $${listing.price}`;
+  const description =
+    listing.description?.slice(0, 160) ||
+    "A preloved piece from Closet Collective.";
+  // Only use absolute (http) photos for the preview; the SVG placeholder
+  // doesn't render well as a social card.
+  const image = listing.image.startsWith("http") ? listing.image : undefined;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      ...(image ? { images: [image] } : {}),
+    },
+    twitter: {
+      card: image ? "summary_large_image" : "summary",
+      title,
+      description,
+      ...(image ? { images: [image] } : {}),
+    },
+  };
+}
 
 export default async function ListingPage({
   params,
@@ -123,6 +162,7 @@ export default async function ListingPage({
                 >
                   Order via Telegram
                 </a>
+                <ShareButton title={listing.name} />
               </div>
             </div>
           </div>
