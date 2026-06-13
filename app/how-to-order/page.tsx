@@ -10,8 +10,8 @@ const steps = [
     body: "Browse the shop and check the photos, sizing, and any flaws noted in the description.",
   },
   {
-    title: "Pay securely",
-    body: "Tap Buy Now to check out on the website, or DM the seller on Telegram for PayNow, PayLah, or bank transfer.",
+    title: "Message to buy",
+    body: "Tap Order via Telegram on the piece. The seller confirms it's available and shares PayNow, PayLah, or bank transfer details.",
   },
   {
     title: "Collect the cute",

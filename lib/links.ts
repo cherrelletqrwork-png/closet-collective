@@ -12,7 +12,7 @@ export const BIO_LINKS: BioLink[] = [
     label: "Shop the closet",
     href: "/shop",
     emoji: "🛍️",
-    note: "Browse every piece & pay securely",
+    note: "Browse every piece & order on Telegram",
   },
   {
     label: "Telegram channel",

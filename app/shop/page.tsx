@@ -55,8 +55,8 @@ export default async function ShopPage({
           <p className="font-script text-4xl text-rose">browse the drop</p>
           <h1 className="text-5xl font-bold text-cocoa">Shop Closet Collective</h1>
           <p className="mt-4 max-w-2xl text-cocoa-light">
-            Filter by seller, category, status, or budget. Pay securely on the
-            website, or DM the seller on Telegram.
+            Filter by seller, category, status, or budget. Found something you
+            love? Message the seller on Telegram to make it yours.
           </p>
         </div>
       </section>

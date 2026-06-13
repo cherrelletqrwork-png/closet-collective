@@ -43,7 +43,7 @@ export function Nav() {
           href="/shop"
           className="btn-shine rounded-full bg-rose px-4 py-2 text-sm font-extrabold text-white shadow-card transition hover:bg-rose-deep"
         >
-          Buy now
+          Shop now
         </Link>
       </nav>
       <div className="flex gap-2 overflow-x-auto px-4 pb-3 md:hidden">
