@@ -151,9 +151,6 @@ export default async function Home() {
                   <p className="font-bold text-cocoa-light">
                     @{seller.telegram}
                   </p>
-                  <p className="mt-2 text-sm leading-6 text-cocoa-light">
-                    {seller.blurb}
-                  </p>
                 </div>
               </Reveal>
             ))}

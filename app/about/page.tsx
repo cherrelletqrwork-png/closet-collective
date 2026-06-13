@@ -51,7 +51,6 @@ export default async function AboutPage() {
                     @{seller.telegram}
                   </a>
                 </div>
-                <p className="mt-4 leading-7 text-cocoa-light">{seller.blurb}</p>
                 <div className="mt-5 rounded-md bg-ivory p-4">
                   <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-cocoa-light">
                     Delivery
