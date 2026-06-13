@@ -11,6 +11,7 @@ import type {
 } from "@/lib/types";
 import { CATEGORIES, CONDITIONS, STATUSES } from "@/lib/types";
 import { SELLERS } from "@/lib/sellers";
+import { fileToJpegDataUrl } from "@/lib/processImage";
 import { StatusBadge } from "@/components/StatusBadge";
 import { OrdersPanel } from "./OrdersPanel";
 import { SiteContentForm } from "./SiteContentForm";
@@ -23,6 +24,8 @@ const TABS: { value: AdminTab; label: string }[] = [
   { value: "orders", label: "Orders" },
 ];
 
+const PLACEHOLDER_IMAGE = "/items/top-1.svg";
+
 function emptyForm(seller: string): ListingInput {
   return {
     name: "",
@@ -33,17 +36,9 @@ function emptyForm(seller: string): ListingInput {
     category: "tops",
     seller,
     status: "available",
-    image: "/items/top-1.svg",
+    image: PLACEHOLDER_IMAGE,
+    images: [PLACEHOLDER_IMAGE],
   };
-}
-
-async function fileToDataUrl(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result));
-    reader.onerror = () => reject(reader.error);
-    reader.readAsDataURL(file);
-  });
 }
 
 export function AdminClient({
@@ -113,6 +108,57 @@ export function AdminClient({
     setForm((current) => ({ ...current, [key]: value }));
   }
 
+  // Keep image (cover) in sync with the images array — cover is always the
+  // first photo.
+  function setImages(images: string[]) {
+    setForm((current) => ({
+      ...current,
+      images,
+      image: images[0] ?? PLACEHOLDER_IMAGE,
+    }));
+  }
+
+  async function addPhotos(files: FileList | null) {
+    if (!files?.length) return;
+    setBusy(true);
+    setNotice("");
+    try {
+      const converted = await Promise.all(
+        Array.from(files).map((file) => fileToJpegDataUrl(file))
+      );
+      setForm((current) => {
+        // Drop the placeholder once real photos arrive.
+        const existing = current.images.filter(
+          (img) => img !== PLACEHOLDER_IMAGE
+        );
+        const images = [...existing, ...converted];
+        return { ...current, images, image: images[0] ?? PLACEHOLDER_IMAGE };
+      });
+    } catch {
+      setNotice("One of those photos couldn't be processed. Please try another.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function removePhoto(index: number) {
+    setForm((current) => {
+      const images = current.images.filter((_, i) => i !== index);
+      const next = images.length ? images : [PLACEHOLDER_IMAGE];
+      return { ...current, images: next, image: next[0] };
+    });
+  }
+
+  function makeCover(index: number) {
+    setForm((current) => {
+      if (index <= 0) return current;
+      const images = [...current.images];
+      const [picked] = images.splice(index, 1);
+      images.unshift(picked);
+      return { ...current, images, image: images[0] };
+    });
+  }
+
   function startEdit(listing: Listing) {
     setEditingId(listing.id);
     setForm({
@@ -125,6 +171,7 @@ export function AdminClient({
       seller: listing.seller,
       status: listing.status,
       image: listing.image,
+      images: listing.images?.length ? listing.images : [listing.image],
     });
     setNotice("");
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -281,23 +328,60 @@ export function AdminClient({
         )}
 
         <form onSubmit={saveListing} className="mt-5 space-y-4">
-          <label className="block text-sm font-extrabold text-cocoa">
-            Photo
-            <input
-              type="file"
-              accept="image/*"
-              onChange={async (event) => {
-                const file = event.target.files?.[0];
-                if (file) updateField("image", await fileToDataUrl(file));
-              }}
-              className="mt-2 w-full rounded-md border border-blush-deep bg-ivory px-3 py-3 text-sm"
-            />
-          </label>
-          <img
-            src={form.image}
-            alt="Listing preview"
-            className="aspect-[4/5] w-full rounded-md border border-blush-deep object-cover"
-          />
+          <div>
+            <label className="block text-sm font-extrabold text-cocoa">
+              Photos
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={(event) => {
+                  addPhotos(event.target.files);
+                  event.target.value = "";
+                }}
+                className="mt-2 w-full rounded-md border border-blush-deep bg-ivory px-3 py-3 text-sm"
+              />
+            </label>
+            <p className="mt-1 text-xs font-bold text-cocoa-light">
+              Add as many as you like — the first one is the cover. iPhone
+              photos are converted automatically.
+            </p>
+            <div className="mt-3 grid grid-cols-3 gap-2">
+              {form.images.map((image, index) => (
+                <div
+                  key={`${image.slice(0, 24)}-${index}`}
+                  className="group relative overflow-hidden rounded-md border border-blush-deep"
+                >
+                  <img
+                    src={image}
+                    alt={`Photo ${index + 1}`}
+                    className="aspect-square w-full object-cover"
+                  />
+                  {index === 0 ? (
+                    <span className="absolute left-1 top-1 rounded-full bg-rose px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-white">
+                      Cover
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => makeCover(index)}
+                      className="absolute left-1 top-1 rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-rose-deep"
+                    >
+                      Set cover
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => removePhoto(index)}
+                    className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white/90 text-sm font-extrabold text-status-sold"
+                    aria-label="Remove photo"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
           <label className="block text-sm font-extrabold text-cocoa">
             Item name
             <input

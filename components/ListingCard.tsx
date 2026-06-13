@@ -21,6 +21,11 @@ export function ListingCard({ listing }: { listing: Listing }) {
           <div className="absolute left-3 top-3">
             <StatusBadge status={listing.status} />
           </div>
+          {listing.images.length > 1 && (
+            <span className="absolute right-3 top-3 rounded-full bg-white/90 px-2 py-1 text-xs font-extrabold text-rose-deep shadow-card">
+              ⊞ {listing.images.length}
+            </span>
+          )}
         </div>
       </Link>
       <div className="space-y-3 p-4">

@@ -17,8 +17,13 @@ create table if not exists public.listings (
   seller text not null,
   status text not null default 'available' check (status in ('available', 'reserved', 'sold')),
   image text not null default '',
+  images jsonb not null default '[]'::jsonb,
   created_at timestamptz not null default now()
 );
+
+-- If you created the table before multi-photo support, add the column:
+alter table public.listings
+  add column if not exists images jsonb not null default '[]'::jsonb;
 
 -- ──────────────────────────────────────────────
 -- Orders (website checkout)

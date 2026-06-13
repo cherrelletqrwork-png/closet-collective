@@ -101,10 +101,13 @@ export async function POST(request: Request) {
               description: `Size ${listing.size} · ${listing.condition} · from ${
                 seller?.name ?? listing.seller
               }'s closet`,
-              // Stripe only accepts absolute image URLs.
-              ...(listing.image.startsWith("http")
-                ? { images: [listing.image] }
-                : {}),
+              // Stripe only accepts absolute image URLs (max 8).
+              ...(() => {
+                const urls = listing.images
+                  .filter((img) => img.startsWith("http"))
+                  .slice(0, 8);
+                return urls.length ? { images: urls } : {};
+              })(),
             },
           },
         },

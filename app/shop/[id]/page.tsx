@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BuyNowButton } from "@/components/BuyNowButton";
+import { Gallery } from "@/components/Gallery";
 import { PageShell } from "@/components/PageShell";
 import { StatusBadge } from "@/components/StatusBadge";
 import { HOLD_MINUTES, cancelOrder, getListing } from "@/lib/store";
@@ -40,13 +41,7 @@ export default async function ListingPage({
             </p>
           )}
           <div className="mt-6 grid gap-8 lg:grid-cols-[0.95fr_1.05fr]">
-            <div className="overflow-hidden rounded-lg border border-blush-deep bg-white p-3 shadow-soft">
-              <img
-                src={listing.image}
-                alt={listing.name}
-                className="aspect-[4/5] w-full rounded-md object-cover"
-              />
-            </div>
+            <Gallery images={listing.images} alt={listing.name} />
             <div className="rounded-lg border border-blush-deep/60 bg-white p-6 shadow-card">
               <StatusBadge status={listing.status} />
               <p className="mt-5 font-script text-4xl text-rose">

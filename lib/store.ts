@@ -48,7 +48,9 @@ function sortNewest(listings: Listing[]): Listing[] {
   );
 }
 
-const DATA_URL_RE = /^data:image\/(png|jpeg|jpg|webp|gif);base64,/;
+// Accept any image subtype (jpeg/png/webp/…). The admin form converts
+// uploads to JPEG before sending, but we stay liberal in what we accept.
+const DATA_URL_RE = /^data:image\/([a-z0-9.+-]+);base64,/i;
 
 // Photos arrive from the admin form as base64 data URLs. In Supabase mode
 // they are uploaded to storage and swapped for a public URL; in demo mode
@@ -57,18 +59,60 @@ async function resolveImage(image: string): Promise<string> {
   const match = image.match(DATA_URL_RE);
   if (!match || !isSupabaseConfigured()) return image;
 
-  const ext = match[1] === "jpeg" ? "jpg" : match[1];
+  const subtype = match[1].toLowerCase();
+  const ext = subtype === "jpeg" ? "jpg" : subtype;
   const path = `${randomUUID()}.${ext}`;
   const buffer = Buffer.from(image.slice(match[0].length), "base64");
 
   const supabase = getSupabase();
   const { error } = await supabase.storage
     .from("listing-photos")
-    .upload(path, buffer, { contentType: `image/${match[1]}` });
+    .upload(path, buffer, { contentType: `image/${subtype}` });
   if (error) throw new Error(`Photo upload failed: ${error.message}`);
 
   return supabase.storage.from("listing-photos").getPublicUrl(path).data
     .publicUrl;
+}
+
+// True when a write failed only because the `images` column is missing
+// (multi-photo migration not run yet). Used to retry with cover-only.
+// Covers both the raw Postgres error and PostgREST's schema-cache wording.
+function isMissingImagesColumn(error: { message?: string }): boolean {
+  const message = error.message ?? "";
+  return (
+    /column .*images.* does not exist/i.test(message) ||
+    /find the 'images' column/i.test(message)
+  );
+}
+
+async function resolveImages(images: string[]): Promise<string[]> {
+  const resolved: string[] = [];
+  for (const image of images) resolved.push(await resolveImage(image));
+  return resolved;
+}
+
+// Older rows (and the cover-only code paths) may carry just `image`. Make
+// sure every listing handed out has a populated `images` array with the
+// cover first.
+function withImages(listing: Listing): Listing {
+  const images =
+    Array.isArray(listing.images) && listing.images.length > 0
+      ? listing.images
+      : listing.image
+        ? [listing.image]
+        : [];
+  return { ...listing, images, image: images[0] ?? listing.image };
+}
+
+// Build the {image, images} pair to persist from whatever the form sent.
+function imageFields(input: { image?: string; images?: string[] }): {
+  image: string;
+  images: string[];
+} {
+  const images = (input.images?.length ? input.images : input.image ? [input.image] : []).filter(
+    Boolean
+  );
+  return { image: images[0] ?? input.image ?? "", images };
 }
 
 // ── First-come-first-served checkout holds ────────────────
@@ -186,21 +230,22 @@ export async function getListings(): Promise<Listing[]> {
   // Listings change at runtime, so never bake them into prerendered HTML.
   await connection();
   await releaseExpiredHolds();
-  if (!isSupabaseConfigured()) return sortNewest(demoListings());
+  if (!isSupabaseConfigured()) return sortNewest(demoListings()).map(withImages);
 
   const { data, error } = await getSupabase()
     .from("listings")
     .select("*")
     .order("created_at", { ascending: false });
   if (error) throw new Error(`Failed to load listings: ${error.message}`);
-  return data as Listing[];
+  return (data as Listing[]).map(withImages);
 }
 
 export async function getListing(id: string): Promise<Listing | null> {
   await connection();
   await releaseExpiredHolds();
   if (!isSupabaseConfigured()) {
-    return demoListings().find((l) => l.id === id) ?? null;
+    const listing = demoListings().find((l) => l.id === id);
+    return listing ? withImages(listing) : null;
   }
 
   const { data, error } = await getSupabase()
@@ -209,54 +254,84 @@ export async function getListing(id: string): Promise<Listing | null> {
     .eq("id", id)
     .maybeSingle();
   if (error) throw new Error(`Failed to load listing: ${error.message}`);
-  return data as Listing | null;
+  return data ? withImages(data as Listing) : null;
 }
 
 export async function createListing(input: ListingInput): Promise<Listing> {
-  const image = await resolveImage(input.image);
+  const { images, image } = imageFields(input);
+  const resolved = await resolveImages(images);
+  const fields = imageFields({ images: resolved, image });
 
   if (!isSupabaseConfigured()) {
     const listing: Listing = {
       ...input,
-      image,
+      ...fields,
       id: randomUUID(),
       created_at: new Date().toISOString(),
     };
     demoListings().push(listing);
-    return listing;
+    return withImages(listing);
   }
 
-  const { data, error } = await getSupabase()
+  const supabase = getSupabase();
+  let { data, error } = await supabase
     .from("listings")
-    .insert({ ...input, image })
+    .insert({ ...input, ...fields })
     .select()
     .single();
+  // Safety net for databases that haven't run the multi-photo migration yet:
+  // retry storing just the cover so adding a listing never hard-fails.
+  if (error && isMissingImagesColumn(error)) {
+    const { images: _drop, ...rest } = { ...input, ...fields };
+    void _drop;
+    ({ data, error } = await supabase
+      .from("listings")
+      .insert(rest)
+      .select()
+      .single());
+  }
   if (error) throw new Error(`Failed to create listing: ${error.message}`);
-  return data as Listing;
+  return withImages(data as Listing);
 }
 
 export async function updateListing(
   id: string,
   input: Partial<ListingInput>
 ): Promise<Listing | null> {
-  const patch = { ...input };
-  if (patch.image) patch.image = await resolveImage(patch.image);
+  const patch: Partial<ListingInput> = { ...input };
+  // Only touch photo fields when the form actually sent them.
+  if (input.images !== undefined || input.image !== undefined) {
+    const { images, image } = imageFields(input);
+    const resolved = await resolveImages(images);
+    Object.assign(patch, imageFields({ images: resolved, image }));
+  }
 
   if (!isSupabaseConfigured()) {
     const listing = demoListings().find((l) => l.id === id);
     if (!listing) return null;
     Object.assign(listing, patch);
-    return listing;
+    return withImages(listing);
   }
 
-  const { data, error } = await getSupabase()
+  const supabase = getSupabase();
+  let { data, error } = await supabase
     .from("listings")
     .update(patch)
     .eq("id", id)
     .select()
     .maybeSingle();
+  if (error && isMissingImagesColumn(error)) {
+    const { images: _drop, ...rest } = patch;
+    void _drop;
+    ({ data, error } = await supabase
+      .from("listings")
+      .update(rest)
+      .eq("id", id)
+      .select()
+      .maybeSingle());
+  }
   if (error) throw new Error(`Failed to update listing: ${error.message}`);
-  return data as Listing | null;
+  return data ? withImages(data as Listing) : null;
 }
 
 export async function deleteListing(id: string): Promise<boolean> {

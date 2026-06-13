@@ -16,6 +16,7 @@ export const SEED_LISTINGS: Listing[] = [
     seller: "cherrelle",
     status: "available",
     image: "/items/top-1.svg",
+    images: ["/items/top-1.svg"],
     created_at: "2026-06-01T10:00:00Z",
   },
   {
@@ -30,6 +31,7 @@ export const SEED_LISTINGS: Listing[] = [
     seller: "karina",
     status: "available",
     image: "/items/dress-1.svg",
+    images: ["/items/dress-1.svg"],
     created_at: "2026-06-02T10:00:00Z",
   },
   {
@@ -44,6 +46,7 @@ export const SEED_LISTINGS: Listing[] = [
     seller: "anthea",
     status: "reserved",
     image: "/items/top-2.svg",
+    images: ["/items/top-2.svg"],
     created_at: "2026-06-03T10:00:00Z",
   },
   {
@@ -58,6 +61,7 @@ export const SEED_LISTINGS: Listing[] = [
     seller: "selena",
     status: "available",
     image: "/items/bottom-1.svg",
+    images: ["/items/bottom-1.svg"],
     created_at: "2026-06-04T10:00:00Z",
   },
   {
@@ -72,6 +76,7 @@ export const SEED_LISTINGS: Listing[] = [
     seller: "charlotte",
     status: "available",
     image: "/items/acc-1.svg",
+    images: ["/items/acc-1.svg"],
     created_at: "2026-06-05T10:00:00Z",
   },
   {
@@ -86,6 +91,7 @@ export const SEED_LISTINGS: Listing[] = [
     seller: "cherrelle",
     status: "sold",
     image: "/items/bottom-2.svg",
+    images: ["/items/bottom-2.svg"],
     created_at: "2026-06-05T12:00:00Z",
   },
   {
@@ -100,6 +106,7 @@ export const SEED_LISTINGS: Listing[] = [
     seller: "selena",
     status: "available",
     image: "/items/dress-2.svg",
+    images: ["/items/dress-2.svg"],
     created_at: "2026-06-06T10:00:00Z",
   },
   {
@@ -114,6 +121,7 @@ export const SEED_LISTINGS: Listing[] = [
     seller: "karina",
     status: "available",
     image: "/items/acc-2.svg",
+    images: ["/items/acc-2.svg"],
     created_at: "2026-06-07T10:00:00Z",
   },
   {
@@ -128,6 +136,7 @@ export const SEED_LISTINGS: Listing[] = [
     seller: "charlotte",
     status: "reserved",
     image: "/items/top-3.svg",
+    images: ["/items/top-3.svg"],
     created_at: "2026-06-08T10:00:00Z",
   },
   {
@@ -142,6 +151,7 @@ export const SEED_LISTINGS: Listing[] = [
     seller: "anthea",
     status: "available",
     image: "/items/acc-3.svg",
+    images: ["/items/acc-3.svg"],
     created_at: "2026-06-09T10:00:00Z",
   },
 ];

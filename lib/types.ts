@@ -12,7 +12,8 @@ export interface Listing {
   category: Category;
   seller: string; // seller slug, see lib/sellers.ts
   status: ListingStatus;
-  image: string; // public URL, /items/*.svg placeholder, or data URL
+  image: string; // cover photo (= images[0]); public URL, /items/*.svg, or data URL
+  images: string[]; // all photos, cover first
   created_at: string;
 }
 

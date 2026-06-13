@@ -22,7 +22,7 @@ export function Nav() {
               Closet Collective
             </span>
             <span className="hidden text-xs font-bold uppercase tracking-[0.22em] text-cocoa-light sm:block">
-              Singapore preloved
+              Our preloved
             </span>
           </span>
         </Link>
