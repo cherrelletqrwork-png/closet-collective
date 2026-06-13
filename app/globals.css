@@ -303,11 +303,112 @@ h4 {
   opacity: 0;
 }
 
+/* ── Immersive loading splash (app/loading.tsx) ────────── */
+@keyframes splash-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.7) rotate(-8deg);
+  }
+  60% {
+    transform: scale(1.06) rotate(3deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes splash-ring {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+@keyframes shimmer-sweep {
+  0% {
+    background-position: 200% center;
+  }
+  100% {
+    background-position: -200% center;
+  }
+}
+
+@keyframes splash-bar {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(220%);
+  }
+}
+
+@keyframes splash-orbit {
+  from {
+    transform: rotate(0deg) translateX(58px) rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg) translateX(58px) rotate(-360deg);
+  }
+}
+
+.splash-logo {
+  animation:
+    splash-pop 0.7s cubic-bezier(0.22, 1, 0.36, 1) both,
+    float-gentle 4s ease-in-out 0.7s infinite;
+}
+
+.splash-ring {
+  animation: splash-ring 2.4s ease-out infinite;
+}
+
+.splash-ring-2 {
+  animation-delay: 1.2s;
+}
+
+.splash-title {
+  background: linear-gradient(
+    100deg,
+    var(--color-rose-deep) 20%,
+    #f5e3e6 50%,
+    var(--color-rose-deep) 80%
+  );
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer-sweep 2.6s linear infinite;
+}
+
+.splash-bar-fill {
+  animation: splash-bar 1.5s ease-in-out infinite;
+}
+
+.splash-orbit {
+  animation: splash-orbit 3.4s linear infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .reveal {
     opacity: 1;
     transform: none;
     transition: none;
+  }
+
+  .splash-logo,
+  .splash-ring,
+  .splash-title,
+  .splash-bar-fill,
+  .splash-orbit {
+    animation: none;
+  }
+
+  .splash-title {
+    -webkit-text-fill-color: var(--color-rose-deep);
   }
 
   .rise-in {

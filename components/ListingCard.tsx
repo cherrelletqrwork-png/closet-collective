@@ -16,6 +16,8 @@ export function ListingCard({ listing }: { listing: Listing }) {
           <img
             src={listing.image}
             alt={listing.name}
+            loading="lazy"
+            decoding="async"
             className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
           />
           <div className="absolute left-3 top-3">

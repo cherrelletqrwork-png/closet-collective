@@ -14,7 +14,7 @@ export function CursorTrail() {
     let last = 0;
     function onMove(event: PointerEvent) {
       const now = performance.now();
-      if (now - last < 80) return;
+      if (now - last < 120) return;
       last = now;
 
       const spark = document.createElement("span");

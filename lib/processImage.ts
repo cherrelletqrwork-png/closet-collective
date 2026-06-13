@@ -4,8 +4,8 @@
 // browser (Chrome can't render HEIC, which is why raw iPhone uploads were
 // invisible before).
 
-const MAX_EDGE = 1600;
-const JPEG_QUALITY = 0.82;
+const MAX_EDGE = 1280;
+const JPEG_QUALITY = 0.8;
 
 function isHeic(file: File): boolean {
   const type = file.type.toLowerCase();

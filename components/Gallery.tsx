@@ -36,6 +36,8 @@ export function Gallery({ images, alt }: { images: string[]; alt: string }) {
               <img
                 src={image}
                 alt={`${alt} thumbnail ${index + 1}`}
+                loading="lazy"
+                decoding="async"
                 className="aspect-square w-full object-cover"
               />
             </button>
