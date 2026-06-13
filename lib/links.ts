@@ -21,24 +21,23 @@ export const BIO_LINKS: BioLink[] = [
     note: "New drops & restock alerts",
   },
   {
-    // TODO: paste your Carousell profile URL here.
     label: "Carousell",
-    href: "",
+    href: "https://carousell.app.link/EUri23krW3b",
     emoji: "🧺",
     note: "Find us on Carousell",
   },
   {
-    // TODO: paste your Instagram URL here, e.g. https://instagram.com/yourhandle
+    label: "TikTok",
+    href: "https://www.tiktok.com/@closetcollectivesg",
+    emoji: "🎀",
+    note: "Outfit videos & hauls",
+  },
+  {
+    // TODO: add your Instagram URL once you make an account,
+    // e.g. https://instagram.com/yourhandle
     label: "Instagram",
     href: "",
     emoji: "📸",
     note: "Styling & behind the scenes",
-  },
-  {
-    // TODO: paste your TikTok URL here.
-    label: "TikTok",
-    href: "",
-    emoji: "🎀",
-    note: "Outfit videos & hauls",
   },
 ];
