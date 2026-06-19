@@ -395,6 +395,73 @@ export async function getOrders(): Promise<Order[]> {
   return data as Order[];
 }
 
+// Manual sold-log entry — a sale arranged over Telegram, jotted down by a
+// seller. Stored in the orders table with status "paid". No listing_id since
+// it isn't tied to a live listing.
+export interface SoldLogInput {
+  item: string;
+  buyer: string;
+  amount: number;
+  soldOn: string; // ISO date
+  notes: string;
+}
+
+export async function addSoldLogEntry(input: SoldLogInput): Promise<Order> {
+  const when = new Date(input.soldOn).toISOString();
+  if (!isSupabaseConfigured()) {
+    const order: Order = {
+      id: randomUUID(),
+      listing_id: null,
+      listing_name: input.item,
+      amount: input.amount,
+      buyer_name: input.buyer,
+      buyer_email: "",
+      delivery_method: "",
+      notes: input.notes,
+      status: "paid",
+      stripe_session_id: null,
+      stripe_payment_intent: null,
+      created_at: when,
+      paid_at: when,
+    };
+    demoOrders().push(order);
+    return order;
+  }
+
+  const { data, error } = await getSupabase()
+    .from("orders")
+    .insert({
+      listing_id: null,
+      listing_name: input.item,
+      amount: input.amount,
+      buyer_name: input.buyer,
+      buyer_email: "",
+      delivery_method: "",
+      notes: input.notes,
+      status: "paid",
+      created_at: when,
+      paid_at: when,
+    })
+    .select()
+    .single();
+  if (error) throw new Error(`Failed to add sold-log entry: ${error.message}`);
+  return data as Order;
+}
+
+export async function deleteOrder(id: string): Promise<boolean> {
+  if (!isSupabaseConfigured()) {
+    const orders = demoOrders();
+    const index = orders.findIndex((o) => o.id === id);
+    if (index === -1) return false;
+    orders.splice(index, 1);
+    return true;
+  }
+
+  const { error } = await getSupabase().from("orders").delete().eq("id", id);
+  if (error) throw new Error(`Failed to delete entry: ${error.message}`);
+  return true;
+}
+
 export async function createOrder(input: OrderInput): Promise<Order> {
   if (!isSupabaseConfigured()) {
     const order: Order = {

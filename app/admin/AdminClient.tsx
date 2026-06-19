@@ -12,8 +12,9 @@ import type {
 import { CATEGORIES, CONDITIONS, STATUSES } from "@/lib/types";
 import { SELLERS } from "@/lib/sellers";
 import { fileToJpegDataUrl } from "@/lib/processImage";
+import { ImageCropper } from "@/components/ImageCropper";
 import { StatusBadge } from "@/components/StatusBadge";
-import { OrdersPanel } from "./OrdersPanel";
+import { SoldLogPanel } from "./SoldLogPanel";
 import { SiteContentForm } from "./SiteContentForm";
 
 type AdminTab = "listings" | "content" | "orders";
@@ -21,7 +22,7 @@ type AdminTab = "listings" | "content" | "orders";
 const TABS: { value: AdminTab; label: string }[] = [
   { value: "listings", label: "Listings" },
   { value: "content", label: "Site content" },
-  { value: "orders", label: "Orders" },
+  { value: "orders", label: "Sold log" },
 ];
 
 const PLACEHOLDER_IMAGE = "/items/top-1.svg";
@@ -64,6 +65,7 @@ export function AdminClient({
   );
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState("");
+  const [cropIndex, setCropIndex] = useState<number | null>(null);
 
   const editingListing = useMemo(
     () => listings.find((listing) => listing.id === editingId),
@@ -157,6 +159,16 @@ export function AdminClient({
       images.unshift(picked);
       return { ...current, images, image: images[0] };
     });
+  }
+
+  function applyCrop(dataUrl: string) {
+    setForm((current) => {
+      if (cropIndex === null) return current;
+      const images = [...current.images];
+      images[cropIndex] = dataUrl;
+      return { ...current, images, image: images[0] ?? PLACEHOLDER_IMAGE };
+    });
+    setCropIndex(null);
   }
 
   function startEdit(listing: Listing) {
@@ -352,7 +364,12 @@ export function AdminClient({
       </div>
 
       {tab === "content" && <SiteContentForm initialContent={initialContent} />}
-      {tab === "orders" && <OrdersPanel initialOrders={initialOrders} />}
+      {tab === "orders" && (
+        <SoldLogPanel
+          initialEntries={initialOrders}
+          listingNames={listings.map((l) => l.name)}
+        />
+      )}
 
       {tab === "listings" && (
         <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr]">
@@ -423,6 +440,15 @@ export function AdminClient({
                   >
                     ×
                   </button>
+                  {image !== PLACEHOLDER_IMAGE && (
+                    <button
+                      type="button"
+                      onClick={() => setCropIndex(index)}
+                      className="absolute inset-x-1 bottom-1 rounded-full bg-white/90 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-rose-deep"
+                    >
+                      Crop
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
@@ -628,6 +654,14 @@ export function AdminClient({
         </div>
       </section>
         </div>
+      )}
+
+      {cropIndex !== null && form.images[cropIndex] && (
+        <ImageCropper
+          src={form.images[cropIndex]}
+          onCancel={() => setCropIndex(null)}
+          onApply={applyCrop}
+        />
       )}
     </div>
   );

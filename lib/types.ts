@@ -23,7 +23,7 @@ export type OrderStatus = "pending" | "paid" | "cancelled";
 
 export interface Order {
   id: string;
-  listing_id: string;
+  listing_id: string | null;
   listing_name: string;
   amount: number;
   buyer_name: string;
